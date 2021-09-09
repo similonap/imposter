@@ -1,0 +1,10 @@
+<div *ngIf="gameTiles" (keydown)="handleKeyboardEvent($event)" tabindex="0">
+    <div *ngFor="let y of YViewingRange; let yIndex = index">
+        <ng-container *ngFor="let x of XViewingRange; let xIndex = index">
+            <div [style.position]="'absolute'" [style.left]="(xIndex*25) + 'px'" [style.top]="(yIndex*25) + 'px'" [style.width]="'25px'" [style.height]="'25px'" [style.opacity]="getTile(x,y).opacity" [style.background-color]="(getTile(x,y).type == 'floor' || getTile(x,y).type == 'door') ? 'white' : 'black'">
+                 <img width="100%" height="100%" *ngIf="x == yourPosition.x && y == yourPosition.y" src="assets/characters/green-among-us-512x512-2691066.png">
+            </div>
+        </ng-container>
+
+    </div>
+</div>
