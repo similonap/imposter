@@ -1,0 +1,22 @@
+{
+  "players": [
+    {
+      "name": "test",
+      "color": "black",
+      "position": {
+        "x": 39,
+        "y": 22
+      },
+      "id": 1
+    },
+    {
+      "name": "Andie Similon",
+      "color": "blue",
+      "position": {
+        "x": 36,
+        "y": 25
+      },
+      "id": 2
+    }
+  ]
+}

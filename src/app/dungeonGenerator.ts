@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import seedrandom from 'seedrandom';
 
 //settings
 const GRID_HEIGHT = 100;
@@ -8,7 +9,16 @@ const ROOM_SIZE_RANGE = [15, 40];
 
 const c= { GRID_HEIGHT, GRID_WIDTH, MAX_ROOMS, ROOM_SIZE_RANGE};
 
-export const createDungeon = () => {
+const random = (rng: any, min: number, max: number) => {
+  if (min < 1 || max < 1) {
+    return rng() * (max - min) + min;  
+  }
+  return Math.floor(rng() * (max - min + 1)) + min;
+
+}
+
+export const createDungeon = (seed : string) => {
+  let rng = seedrandom(seed);
   // HELPER FUNCTIONS FOR CREATING THE MAP
   const isValidRoomPlacement = (grid: any, {x, y, width = 1, height = 1}: any) => {
     // check if on the edge of or outside of the grid
@@ -47,35 +57,35 @@ export const createDungeon = () => {
     // generate room values for each edge of the seed room
     const roomValues = [];
 
-    const north : any = { height: _.random(min, max), width: _.random(min, max) };
-    north.x = _.random(x, x + width - 1);
+    const north : any = { height: random(rng,min, max), width: random(rng,min, max) };
+    north.x = random(rng,x, x + width - 1);
     north.y = y - north.height - 1;
-    north.doorx = _.random(north.x, (Math.min(north.x + north.width, x + width)) - 1);
+    north.doorx = random(rng,north.x, (Math.min(north.x + north.width, x + width)) - 1);
     north.doory = y - 1;
     north.id= 'N';
     roomValues.push(north);
 
-    const east : any = { height: _.random(min, max), width: _.random(min, max) };
+    const east : any = { height: random(rng,min, max), width: random(rng,min, max) };
     east.x = x + width + 1;
-    east.y = _.random(y, height + y - 1);
+    east.y = random(rng,y, height + y - 1);
     east.doorx = east.x - 1;
-    east.doory = _.random(east.y, (Math.min(east.y + east.height, y + height)) - 1);
+    east.doory = random(rng,east.y, (Math.min(east.y + east.height, y + height)) - 1);
     east.id= 'E';
     roomValues.push(east);
 
-    const south : any = { height: _.random(min, max), width: _.random(min, max) };
-    south.x = _.random(x, width + x - 1);
+    const south : any = { height: random(rng,min, max), width: random(rng,min, max) };
+    south.x = random(rng,x, width + x - 1);
     south.y = y + height + 1;
-    south.doorx = _.random(south.x, (Math.min(south.x + south.width, x + width)) - 1);
+    south.doorx = random(rng,south.x, (Math.min(south.x + south.width, x + width)) - 1);
     south.doory = y + height;
     south.id='S';
     roomValues.push(south);
 
-    const west : any= { height: _.random(min, max), width: _.random(min, max) };
+    const west : any= { height: random(rng,min, max), width: random(rng,min, max) };
     west.x = x - west.width - 1;
-    west.y = _.random(y, height + y - 1);
+    west.y = random(rng,y, height + y - 1);
     west.doorx = x - 1;
-    west.doory = _.random(west.y, (Math.min(west.y + west.height, y + height)) - 1);
+    west.doory = random(rng,west.y, (Math.min(west.y + west.height, y + height)) - 1);
     west.id='W';
     roomValues.push(west);
 
@@ -84,6 +94,11 @@ export const createDungeon = () => {
       if (isValidRoomPlacement(grid, room)) {
         // place room
         grid = placeCells(grid, room);
+
+
+        console.log(room);
+        grid = placeCells(grid, {x: room.x+1, y: room.y+1}, 'minigame');
+
         // place door
         grid = placeCells(grid, {x: room.doorx, y: room.doory}, 'door');
         // need placed room values for the next seeds
@@ -101,17 +116,17 @@ export const createDungeon = () => {
   for (let i = 0; i < c.GRID_HEIGHT; i++) {
     grid.push([]);
     for (let j = 0; j < c.GRID_WIDTH; j++) {
-      grid[i].push({type: 0, opacity: _.random(0.3, 0.8)});
+      grid[i].push({type: 'space', opacity: random(rng,0.3, 0.8)});
     }
   }
 
   // 2. random values for the first room
   const [min, max] = c.ROOM_SIZE_RANGE;
   const firstRoom = {
-    x: _.random(1, c.GRID_WIDTH - max - 15),
-    y: _.random(1, c.GRID_HEIGHT - max - 15),
-    height: _.random(min, max),
-    width: _.random(min, max),
+    x: random(rng,1, c.GRID_WIDTH - max - 15),
+    y: random(rng,1, c.GRID_HEIGHT - max - 15),
+    height: random(rng,min, max),
+    width: random(rng,min, max),
     id: 'O'
   };
 

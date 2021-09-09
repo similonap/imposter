@@ -1,1 +1,9 @@
-<router-outlet></router-outlet>
+<div style="height: 100%; background-color: black;">
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <app-createplayer></app-createplayer>
+    <app-game-management></app-game-management>
+</div>
+<div class="centered">
+    <app-game [gameWidth]="800" [gameHeight]="800"></app-game>
+</div>
+</div>

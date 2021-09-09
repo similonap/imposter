@@ -1,0 +1,12 @@
+<div>
+    <div *ngIf="!hasPlayer() && colors.length > 0">
+        <input id="name" type="text" [(ngModel)]="name">
+        <select [(ngModel)]="color">
+            <ng-container *ngFor="let color of colors">
+                <option [value]="color">{{color}}</option>
+            </ng-container>
+        </select>
+        <button (click)="createPlayer()">Create player</button>
+    </div>
+    <div *ngIf="colors.length == 0">Game is full</div>
+</div>
