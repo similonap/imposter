@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="!hasPlayer() && colors.length > 0">
+    <div *ngIf="!Me && colors.length > 0" style="display: flex; flex-direction: column;">
         <input id="name" type="text" [(ngModel)]="name">
         <select [(ngModel)]="color">
             <ng-container *ngFor="let color of colors">
@@ -8,5 +8,11 @@
         </select>
         <button (click)="createPlayer()">Create player</button>
     </div>
-    <div *ngIf="colors.length == 0">Game is full</div>
+    <div *ngIf="Me" style="display: flex; flex-direction: column; padding: 10px; justify-content: center;">
+        <img [src]="'assets/characters/' + Me.color + '.png'">
+        <div style="text-align: center; color: white">{{Me.name}}</div>
+        <div *ngIf="Me.imposter" style="text-align: center; color: white">Imposter</div>
+        <div *ngIf="!Me.alive" style="text-align: center; color: red">DEAD</div>
+
+    </div>
 </div>

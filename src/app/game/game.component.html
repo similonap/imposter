@@ -6,15 +6,14 @@
                     [style.top]="(yIndex*blockSize) + 'px'" [style.width]="blockSize + 'px'"
                     [style.height]="blockSize + 'px'"
                     [style.background-color]="'white'">
-                    <img width="100%" height="100%" *ngIf="getPlayerAtPosition(x,y)"
-                        [src]="'assets/characters/' + getPlayerAtPosition(x,y)!.color + '.png'">
+                    <app-game-tile-character [xCoord]="x" [yCoord]="y"></app-game-tile-character>
                 </div>
                 <div *ngIf="getTile(x,y).type == 'space'" [style.position]="'absolute'" [style.left]="(xIndex*blockSize) + 'px'"
                     [style.top]="(yIndex*blockSize) + 'px'" [style.width]="blockSize + 'px'"
                     [style.height]="blockSize + 'px'" [style.opacity]="getTile(x,y).opacity"
                     [style.background-color]="'black'">
                 </div>
-                <div *ngIf="getTile(x,y).type == 'minigame'" [style.position]="'absolute'" [style.left]="(xIndex*blockSize) + 'px'"
+                <div *ngIf="getTile(x,y).type == 'switch'" [style.position]="'absolute'" [style.left]="(xIndex*blockSize) + 'px'"
                     [style.top]="(yIndex*blockSize) + 'px'" [style.width]="blockSize + 'px'"
                     [style.height]="blockSize + 'px'">
                     <img width="100%" height="100%"

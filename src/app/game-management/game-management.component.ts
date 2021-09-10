@@ -13,10 +13,28 @@ export class GameManagementComponent implements OnInit {
   ngOnInit(): void {
   }
 
-
   
   reset() {
     this.networkService.reset();
+  }
+
+  start() {
+    this.networkService.startGame();
+  }
+
+  stop() {
+    this.networkService.stopGame();
+  }
+
+  generate() {
+    let seed = prompt("Provide seed:");
+    if (seed) {
+      this.networkService.generateDungeon(seed);
+    }
+  }
+
+  get started() {
+    return this.networkService.gameState?.active;
   }
 
 }

@@ -7,13 +7,17 @@ import { FormsModule } from '@angular/forms';
 import { GameComponent } from './game/game.component';
 import { CreateplayerComponent } from './createplayer/createplayer.component';
 import { GameManagementComponent } from './game-management/game-management.component';
+import { GameTileComponent } from './game/game-tile/game-tile.component';
+import { GameTileCharacterComponent } from './game/game-tile-character/game-tile-character.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GameComponent,
     CreateplayerComponent,
-    GameManagementComponent
+    GameManagementComponent,
+    GameTileComponent,
+    GameTileCharacterComponent
   ],
   imports: [
     BrowserModule,

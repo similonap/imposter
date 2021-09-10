@@ -1,1 +1,3 @@
 <button (click)="reset()">Reset Game</button>
+<button *ngIf="!started" (click)="start()">Start Game</button>
+<button *ngIf="!started" (click)="generate()">Generate Map</button>

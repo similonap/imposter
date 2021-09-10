@@ -1,12 +1,8 @@
 import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
-import { createDungeon } from '../dungeonGenerator';
+import { createDungeon, GameTile } from '../dungeonGenerator';
 import * as _ from 'lodash';
 import { NetworkService, Player, Position } from '../network.service';
 
-interface GameTile {
-  type: any,
-  opacity: number
-}
 
 
 
@@ -17,12 +13,16 @@ interface GameTile {
 })
 export class GameComponent implements OnInit {
 
-  gameTiles: GameTile[][] = [];
 
   @Input("gameWidth") gameWidth: number = 0;
   @Input("gameHeight") gameHeight: number = 0;
   
   @ViewChild('gameContainer') gameContainer: ElementRef<HTMLInputElement> | undefined;
+
+  get gameTiles() : GameTile[][] {
+    return this.networkService.gameTiles;
+  }
+
 
   get XViewingRange(): number[] {
     if (this.networkService.me) 
@@ -45,8 +45,6 @@ export class GameComponent implements OnInit {
 
   constructor(private networkService: NetworkService) {
 
-    let dungeon = createDungeon('initialSeed');
-    this.gameTiles = dungeon.map;
 
   }
 
@@ -77,6 +75,15 @@ export class GameComponent implements OnInit {
           y: this.networkService.me.position.y - 1
         }
       }
+      if (event.key === ' ') {
+        if (this.networkService.me.imposter) {
+          let playerAtMyLocation = this.networkService.getPlayerAtMyLocation();
+
+           if (playerAtMyLocation) {
+            this.networkService.killPlayer(playerAtMyLocation.id!);
+           }
+        }
+      }
       if (this.gameTiles[newPosition.y][newPosition.x].type === 'floor' || this.gameTiles[newPosition.y][newPosition.x].type === 'door') {
         this.networkService.setNewMePosition(newPosition);
       }
@@ -103,9 +110,7 @@ export class GameComponent implements OnInit {
     return this.networkService.me;
   }
   
-  getPlayerAtPosition(x: number, y: number): Player | undefined {
-    return this.networkService.getPlayerAtPosition(x,y);
-  }
+
 
   ngOnInit(): void {
 

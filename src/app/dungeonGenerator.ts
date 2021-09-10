@@ -17,7 +17,30 @@ const random = (rng: any, min: number, max: number) => {
 
 }
 
-export const createDungeon = (seed : string) => {
+export interface Room {
+    x: number,
+    y: number,
+    width: number,
+    height: number
+}
+
+export interface SwitchPosition {
+    x: number,
+    y: number
+}
+
+export interface Dungeon {
+    map: GameTile[][],
+    firstRoom: Room,
+    switchPositions: SwitchPosition[]
+}
+
+export interface GameTile {
+    type: any,
+    opacity: number
+  }
+
+export const createDungeon = (seed : string) : Dungeon => {
   let rng = seedrandom(seed);
   // HELPER FUNCTIONS FOR CREATING THE MAP
   const isValidRoomPlacement = (grid: any, {x, y, width = 1, height = 1}: any) => {
@@ -90,14 +113,15 @@ export const createDungeon = (seed : string) => {
     roomValues.push(west);
 
     const placedRooms : any[] = [];   
+    let switchPositions : any[] = [];
     roomValues.forEach(room => {
       if (isValidRoomPlacement(grid, room)) {
         // place room
         grid = placeCells(grid, room);
 
-
-        console.log(room);
-        grid = placeCells(grid, {x: room.x+1, y: room.y+1}, 'minigame');
+        let switchPosition = {x: room.x+1, y: room.y+1};
+        switchPositions.push(switchPosition);
+        grid = placeCells(grid, switchPosition, 'switch');
 
         // place door
         grid = placeCells(grid, {x: room.doorx, y: room.doory}, 'door');
@@ -105,8 +129,7 @@ export const createDungeon = (seed : string) => {
         placedRooms.push(room);
       }
     });
-    console.log(placedRooms);
-    return {grid, placedRooms};
+    return {grid, placedRooms,switchPositions};
   };
 
   // BUILD OUT THE MAP
@@ -134,15 +157,17 @@ export const createDungeon = (seed : string) => {
   grid = placeCells(grid, firstRoom);
 
   // 4. using the first room as a seed, recursivley add rooms to the grid
-  const growMap : any = (grid: any, seedRooms: any, counter = 1, maxRooms = c.MAX_ROOMS) => {
+  const growMap : any = (grid: any, seedRooms: any, counter = 1, maxRooms = c.MAX_ROOMS, switchPositions: any[]) => {
     if (counter + seedRooms.length > maxRooms || !seedRooms.length) {
-      return grid;
+      return { grid , switchPositions };
     }
 
     grid = createRoomsFromSeed(grid, seedRooms.pop());
     seedRooms.push(...grid.placedRooms);
     counter += grid.placedRooms.length;
-    return growMap(grid.grid, seedRooms, counter);
+    return growMap(grid.grid, seedRooms, counter, c.MAX_ROOMS, [...switchPositions, ...grid.switchPositions]);
   };
-  return {map: growMap(grid, [firstRoom]), firstRoom: firstRoom};
+  let tuple = growMap(grid, [firstRoom], 1, c.MAX_ROOMS, []);
+  console.log(tuple);
+  return {map: tuple.grid, firstRoom: firstRoom, switchPositions: tuple.switchPositions};
 };

@@ -1,9 +1,7 @@
-<div style="height: 100%; background-color: black;">
-<div style="display: flex; flex-direction: column; align-items: center;">
-    <app-createplayer></app-createplayer>
-    <app-game-management></app-game-management>
-</div>
-<div class="centered">
-    <app-game [gameWidth]="800" [gameHeight]="800"></app-game>
-</div>
+<div style="width: 800px; display: flex; flex-direction: row; align-items: stretch;">
+    <div style="background-color: black; display: flex; flex-direction: column; align-items: stretch;">
+      <app-createplayer></app-createplayer>
+      <app-game-management></app-game-management>
+    </div>
+    <app-game [gameWidth]="500" [gameHeight]="500"></app-game>
 </div>

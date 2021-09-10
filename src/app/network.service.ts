@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { createDungeon, Dungeon } from './dungeonGenerator';
+import * as _ from 'lodash';
 
 export interface Position {
   x: number,
@@ -10,7 +12,14 @@ export interface Player {
   id?: number,
   name: string,
   color: string,
-  position: Position
+  position: Position,
+  imposter?: boolean,
+  alive?: boolean
+}
+
+export interface GameState {
+  players: Player[],
+  active: boolean
 }
 
 @Injectable({
@@ -18,45 +27,109 @@ export interface Player {
 })
 export class NetworkService {
 
+  dungeon?: Dungeon = undefined;
 
+  get gameTiles() {
+    return this.dungeon?.map!;
+  }
 
-  me: Player | undefined = undefined;
+  playerId: number = 0;
 
-  players : Player[] = [
-    
-  ];
+  gameState?: GameState = undefined;
+
+  get players() {
+    if (this.gameState) {
+      return this.gameState.players;
+    } else {
+      return [];
+    }
+  }
+
+  get me() {
+    if (this.playerId > 0) {
+      return this.gameState?.players.find((player: Player) => player.id == this.playerId)
+    } else {
+      return undefined;
+    }
+  }
 
   getPlayerAtPosition(x: number, y: number): Player | undefined {
     return this.players.find((player: Player) => player.position.x == x && player.position.y == y);
   }
 
+  killPlayer(id: number) {
+    this.http.post<GameState>("http://localhost:3000/kill/" + id, {}).toPromise().then((result: GameState) => {
+      this.gameState = result;
+    })
+  }
+
+  getPlayerAtMyLocation(): Player | undefined {
+    let player = this.getPlayerAtPosition(this.me!.position.x, this.me!.position.y);
+    if (player && player.id != this.me!.id) {
+      return player;
+    }
+    return undefined;
+  }
+
   setNewMePosition(position: Position) {
-    if (this.me) {
-      this.http.patch("http://localhost:3000/players/" + this.me.id, {position: position}).toPromise().then((result: any) => {
-         this.me!.position = result.position;
-      })
+    this.http.patch("http://localhost:3000/players/" + this.playerId, {position: position}).toPromise().then((result: any) => {
+    })
+  }
+
+  getRandomPositionInFirstRoom() : Position {
+    let x = _.random(this.dungeon!.firstRoom.x, this.dungeon!.firstRoom.x + this.dungeon!.firstRoom.width);
+    let y = _.random(this.dungeon!.firstRoom.y, this.dungeon!.firstRoom.y + this.dungeon!.firstRoom.height);
+    return {
+      x,y
     }
   }
 
-  createMe(player: Player) {
-    this.http.post<Player>("http://localhost:3000/players", player).toPromise().then((result: Player) => {
-      this.me = result;
+  createMe(name: string, color: string) {
+    let newPlayer : Player = {
+      name,
+      color,
+      position: this.getRandomPositionInFirstRoom()
+    }
+    this.http.post<Player>("http://localhost:3000/players", newPlayer).toPromise().then((result: Player) => {
+      this.playerId = result.id!;
     })
+  }
+
+  startGame() {
+    this.http.post<GameState>("http://localhost:3000/gameState/start",this.dungeon!.switchPositions).toPromise().then((result: GameState) => {
+      this.gameState = result;
+    })    
+  }
+
+  stopGame() {
+    this.http.post<GameState>("http://localhost:3000/gameState/stop",{}).toPromise().then((result: GameState) => {
+      this.gameState = result;
+    })    
   }
 
   reset() {
-    this.http.post<Player[]>("http://localhost:3000/clear",{}).toPromise().then((result: Player[]) => {
-      this.me = undefined;
-      this.players = result;
+    this.http.post<GameState>("http://localhost:3000/gameState/reset",{}).toPromise().then((result: GameState) => {
+      this.gameState = result;
+      this.playerId = 0;
     })
   }
 
-  constructor(private http: HttpClient) { 
-    this.players = [];
+  generateDungeon(seed: string) {
+    this.dungeon = createDungeon(seed);
+  }
 
+  constructor(private http: HttpClient) { 
+
+    this.generateDungeon('initialSeed');
+
+    console.log(this.dungeon?.switchPositions);
+    
     setInterval(() => {
-      this.http.get<Player[]>("http://localhost:3000/players").toPromise().then((result: Player[]) => {
-        this.players = [...this.me?[this.me]:[], ...result.filter((player : Player) => player.id != this.me?.id)];
+      this.http.get<GameState>("http://localhost:3000/gameState").toPromise().then((result: GameState) => {
+        this.gameState = {...result};
+        if (this.gameState.players.length == 0) {
+          this.playerId = 0;
+        }
       })
     }, 100);
 

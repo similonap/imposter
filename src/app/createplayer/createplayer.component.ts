@@ -41,19 +41,12 @@ export class CreateplayerComponent implements OnInit {
     return difference;
   }
 
-  hasPlayer() {
-    return !!this.networkService.me;
+  get Me() {
+    return this.networkService.me;
   }
 
   createPlayer() {
-    this.networkService.createMe({
-      name: this.name,
-      color: this.color,
-      position: {
-        x: 39,
-        y: 19
-      }
-    });
+    this.networkService.createMe(this.name, this.color);
 
   }
 
