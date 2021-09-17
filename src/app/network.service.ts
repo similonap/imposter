@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { createDungeon, Dungeon } from './dungeonGenerator';
+import { createDungeon, createObjects, Dungeon, Object } from './dungeonGenerator';
 import * as _ from 'lodash';
 
 export interface Position {
@@ -26,11 +26,12 @@ export interface GameState {
   providedIn: 'root'
 })
 export class NetworkService {
-
+  randomSeed: string = 'initialSeed';
   dungeon?: Dungeon = undefined;
+  objects: Object[] = [];
 
   get gameTiles() {
-    return this.dungeon?.map!;
+    return this.dungeon?.grid!;
   }
 
   playerId: number = 0;
@@ -57,6 +58,10 @@ export class NetworkService {
     return this.players.find((player: Player) => player.position.x == x && player.position.y == y);
   }
 
+  getObjectAtPosition(x: number, y: number): Object | undefined {
+    return this.objects.find((object: Object) => object.position.x == x && object.position.y == y);
+  }
+
   killPlayer(id: number) {
     this.http.post<GameState>("http://localhost:3000/kill/" + id, {}).toPromise().then((result: GameState) => {
       this.gameState = result;
@@ -77,8 +82,8 @@ export class NetworkService {
   }
 
   getRandomPositionInFirstRoom() : Position {
-    let x = _.random(this.dungeon!.firstRoom.x, this.dungeon!.firstRoom.x + this.dungeon!.firstRoom.width);
-    let y = _.random(this.dungeon!.firstRoom.y, this.dungeon!.firstRoom.y + this.dungeon!.firstRoom.height);
+    let x = _.random(this.dungeon!.rooms[0].x+1, this.dungeon!.rooms[0].x + this.dungeon!.rooms[0].width-1);
+    let y = _.random(this.dungeon!.rooms[0].y+1, this.dungeon!.rooms[0].y + this.dungeon!.rooms[0].height-1);
     return {
       x,y
     }
@@ -96,7 +101,7 @@ export class NetworkService {
   }
 
   startGame() {
-    this.http.post<GameState>("http://localhost:3000/gameState/start",this.dungeon!.switchPositions).toPromise().then((result: GameState) => {
+    this.http.post<GameState>("http://localhost:3000/gameState/start",[]).toPromise().then((result: GameState) => {
       this.gameState = result;
     })    
   }
@@ -116,14 +121,13 @@ export class NetworkService {
 
   generateDungeon(seed: string) {
     this.dungeon = createDungeon(seed);
+    this.objects = createObjects(this.dungeon, seed);
   }
 
   constructor(private http: HttpClient) { 
 
-    this.generateDungeon('initialSeed');
+    this.generateDungeon(this.randomSeed);
 
-    console.log(this.dungeon?.switchPositions);
-    
     setInterval(() => {
       this.http.get<GameState>("http://localhost:3000/gameState").toPromise().then((result: GameState) => {
         this.gameState = {...result};

@@ -9,6 +9,7 @@ import { CreateplayerComponent } from './createplayer/createplayer.component';
 import { GameManagementComponent } from './game-management/game-management.component';
 import { GameTileComponent } from './game/game-tile/game-tile.component';
 import { GameTileCharacterComponent } from './game/game-tile-character/game-tile-character.component';
+import { GameTileObjectComponent } from './game/game-tile-object/game-tile-object.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { GameTileCharacterComponent } from './game/game-tile-character/game-tile
     CreateplayerComponent,
     GameManagementComponent,
     GameTileComponent,
-    GameTileCharacterComponent
+    GameTileCharacterComponent,
+    GameTileObjectComponent
   ],
   imports: [
     BrowserModule,

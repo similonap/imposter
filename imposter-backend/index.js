@@ -12,20 +12,20 @@ app.use((req, res, next) => {
 
 let active = false;
 
-let switches = [];
+let objects = [];
 
 let players = [
 
 ]
 
 app.get('/gameState', (req, res) => {
-  res.json({ active, players,switches });
+  res.json({ active, players,objects });
 })
 
 app.post('/gameState/reset', (req, res) => {
   players = [];
   active = false;
-  switches = [];
+  objects = [];
   res.json({ active, players });
 })
 
@@ -37,10 +37,10 @@ app.post('/kill/:playerId', (req, res) => {
 })
 
 app.post('/gameState/start', (req, res) => {
-  switches = req.body.map((sw) => { return {...sw, active: false} })
+  objects = req.body.map((sw) => { return {...sw, active: false} })
   active = true;
   players[Math.floor(Math.random() * players.length)].imposter = true
-  res.json({ active, players, switches });
+  res.json({ active, players, objects });
 })
 
 app.post('/gameState/stop', (req, res) => {

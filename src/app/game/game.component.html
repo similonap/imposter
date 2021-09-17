@@ -7,17 +7,13 @@
                     [style.height]="blockSize + 'px'"
                     [style.background-color]="'white'">
                     <app-game-tile-character [xCoord]="x" [yCoord]="y"></app-game-tile-character>
+                    <app-game-tile-object [xCoord]="x" [yCoord]="y"></app-game-tile-object>
+
                 </div>
                 <div *ngIf="getTile(x,y).type == 'space'" [style.position]="'absolute'" [style.left]="(xIndex*blockSize) + 'px'"
                     [style.top]="(yIndex*blockSize) + 'px'" [style.width]="blockSize + 'px'"
                     [style.height]="blockSize + 'px'" [style.opacity]="getTile(x,y).opacity"
                     [style.background-color]="'black'">
-                </div>
-                <div *ngIf="getTile(x,y).type == 'switch'" [style.position]="'absolute'" [style.left]="(xIndex*blockSize) + 'px'"
-                    [style.top]="(yIndex*blockSize) + 'px'" [style.width]="blockSize + 'px'"
-                    [style.height]="blockSize + 'px'">
-                    <img width="100%" height="100%"
-                        [src]="'assets/items/computer.jpg'">
                 </div>
             </ng-container>
 
