@@ -78,7 +78,7 @@ export class GameComponent implements OnInit {
       if (event.key === ' ') {
         if (this.networkService.me.imposter) {
           let playerAtMyLocation = this.networkService.getPlayerAtMyLocation();
-
+           console.log(this.networkService.players);
            if (playerAtMyLocation) {
             this.networkService.killPlayer(playerAtMyLocation.id!);
            }

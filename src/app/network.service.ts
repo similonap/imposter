@@ -69,11 +69,8 @@ export class NetworkService {
   }
 
   getPlayerAtMyLocation(): Player | undefined {
-    let player = this.getPlayerAtPosition(this.me!.position.x, this.me!.position.y);
-    if (player && player.id != this.me!.id) {
-      return player;
-    }
-    return undefined;
+    let player = this.players.find((player: Player) => player.position.x == this.me!.position.x && player.position.y == this.me!.position.y && player.id != this.me!.id);
+    return player;
   }
 
   setNewMePosition(position: Position) {

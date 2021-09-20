@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import seedrandom from 'seedrandom';
+import seedrandom from "seedrandom";
 
 //settings
 const GRID_HEIGHT = 100;
@@ -35,7 +35,7 @@ export interface Dungeon {
 }
 
 export interface GameTile {
-  type: any,
+  type: 'floor' | 'door' | 'space',
   opacity: number
 }
 
@@ -57,7 +57,7 @@ export const createObjects = (dungeon: Dungeon, seed: string): Object[] => {
   });
 }
 
-export const createDungeon = (seed: string): Dungeon => {
+export const createDungeon = (seed: string = 'initialSeed'): Dungeon => {
   let rng = seedrandom(seed);
   // HELPER FUNCTIONS FOR CREATING THE MAP
   const isValidRoomPlacement = (grid: any, { x, y, width = 1, height = 1 }: any) => {
@@ -177,7 +177,6 @@ export const createDungeon = (seed: string): Dungeon => {
     grid = createRoomsFromSeed(grid, seedRooms.pop());
     seedRooms.push(...grid.rooms);
     counter += grid.rooms.length;
-    console.log(grid.rooms);
     return growMap(grid.grid, seedRooms, counter, c.MAX_ROOMS, [...rooms, ...grid.rooms]);
   };
   let tuple = growMap(grid, [firstRoom], 1, c.MAX_ROOMS, []);
